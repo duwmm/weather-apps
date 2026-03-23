@@ -13,7 +13,7 @@ interface SearchResult {
 }
 
 interface SavedLocation {
-  id: string; // lat,lon
+  id: string;
   name: string;
   lat: number;
   lon: number;
@@ -31,7 +31,8 @@ export const WeatherDashboard = () => {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
 
-  // Load saved locations on mount
+  const [draggedIdx, setDraggedIdx] = useState<number | null>(null);
+
   useEffect(() => {
     const saved = localStorage.getItem('neoWeatherLocations');
     if (saved) {
@@ -39,12 +40,10 @@ export const WeatherDashboard = () => {
     }
   }, []);
 
-  // Save locations to local storage whenever it changes
   useEffect(() => {
     localStorage.setItem('neoWeatherLocations', JSON.stringify(savedLocations));
   }, [savedLocations]);
 
-  // Initial location fetch
   useEffect(() => {
     if (activeLocation === null && savedLocations.length === 0) {
       if (!navigator.geolocation) {
@@ -68,12 +67,11 @@ export const WeatherDashboard = () => {
           fetchWeather(loc);
         },
         () => {
-          setError('Location access denied. Please search for a city.');
+          setError('Location access denied. Please search.');
           setLoading(false);
         }
       );
     } else if (savedLocations.length > 0 && activeLocation === null) {
-      // If we have saved locations and none is active, load the first one
       setActiveLocation(savedLocations[0]);
       fetchWeather(savedLocations[0]);
     }
@@ -118,28 +116,37 @@ export const WeatherDashboard = () => {
 
   const toggleSaveLocation = () => {
     if (!activeLocation) return;
-    
     const isSaved = savedLocations.some(l => l.id === activeLocation.id);
     if (isSaved) {
-      // Remove it
       setSavedLocations(savedLocations.filter(l => l.id !== activeLocation.id));
     } else {
-      // Save it
       setSavedLocations([...savedLocations, activeLocation]);
     }
+  };
+
+  const handleDragStart = (idx: number) => setDraggedIdx(idx);
+  const handleDragOver = (e: React.DragEvent) => e.preventDefault();
+  const handleDrop = (dropIdx: number) => {
+    if (draggedIdx === null || draggedIdx === dropIdx) return;
+    const items = [...savedLocations];
+    const draggedItem = items[draggedIdx];
+    items.splice(draggedIdx, 1);
+    items.splice(dropIdx, 0, draggedItem);
+    setSavedLocations(items);
+    setDraggedIdx(null);
   };
 
   const isCurrentSaved = activeLocation ? savedLocations.some(l => l.id === activeLocation.id) : false;
 
   return (
     <div>
-      <header style={{ marginBottom: '40px', paddingBottom: '24px', borderBottom: '4px solid var(--neo-text)' }}>
+      <header style={{ marginBottom: '32px', paddingBottom: '24px', borderBottom: '4px solid var(--neo-text)' }}>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '24px', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <span className="material-symbols-rounded icon-medium" style={{ backgroundColor: 'var(--neo-color-yellow)', borderRadius: '50%', padding: '8px', border: 'var(--neo-border)', boxShadow: 'var(--neo-shadow)' }}>
               wb_sunny
             </span>
-            <h1>Weather</h1>
+            <h1 style={{ fontSize: '3rem' }}>Weather</h1>
           </div>
 
           <div style={{ position: 'relative', width: '100%', maxWidth: '400px', zIndex: 10 }}>
@@ -171,17 +178,21 @@ export const WeatherDashboard = () => {
           </div>
         </div>
 
-        {/* Saved Locations Tabs */}
         <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'center' }}>
-          <h3 style={{ fontSize: '1.2rem', textTransform: 'uppercase' }}>My Locations:</h3>
-          {savedLocations.length === 0 && <span style={{ opacity: 0.6, fontStyle: 'italic' }}>None saved yet</span>}
-          {savedLocations.map(loc => (
+          <h3 style={{ fontSize: '1.2rem', textTransform: 'uppercase', marginRight: '8px' }}>My Locations:</h3>
+          {savedLocations.length === 0 && <span style={{ opacity: 0.6, fontStyle: 'italic' }}>None saved yet. Search to add!</span>}
+          {savedLocations.map((loc, index) => (
             <button 
+              draggable
+              onDragStart={() => handleDragStart(index)}
+              onDragOver={handleDragOver}
+              onDrop={() => handleDrop(index)}
               key={loc.id} 
               className={`neo-button ${activeLocation?.id === loc.id ? 'active-tab' : ''}`}
               onClick={() => fetchWeather(loc)}
+              title="Drag to reorder"
             >
-              <span className="material-symbols-rounded" style={{ fontSize: '1.2rem' }}>location_on</span>
+              <span className="material-symbols-rounded" style={{ fontSize: '1.2rem', cursor: 'grab' }}>drag_indicator</span>
               {loc.name.split(',')[0]}
             </button>
           ))}

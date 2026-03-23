@@ -82,3 +82,18 @@ export const getWeatherDescription = (code: number): string => {
   if ([96, 99].includes(code)) return 'Thunderstorm with hail';
   return 'Unknown';
 }
+
+export const getWeatherColor = (code: number, isDay: number = 1): string => {
+  // Clear sunny/night
+  if (code === 0) return isDay ? 'var(--neo-color-yellow)' : 'var(--neo-color-blue)';
+  // Clouds
+  if ([1, 2, 3].includes(code)) return 'var(--neo-color-white)';
+  // Rain/Drizzle
+  if ([51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82].includes(code)) return 'var(--neo-color-blue)';
+  // Snow
+  if ([71, 73, 75, 77, 85, 86].includes(code)) return 'var(--neo-color-white)';
+  // Thunderstorm
+  if ([95, 96, 99].includes(code)) return 'var(--neo-color-pink)';
+  
+  return 'var(--neo-color-green)'; // default
+};

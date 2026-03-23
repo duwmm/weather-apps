@@ -1,4 +1,4 @@
-import { WeatherData, getWeatherIcon } from '../services/weatherService';
+import { WeatherData, getWeatherIcon, getWeatherColor } from '../services/weatherService';
 
 interface ForecastListProps {
   weather: WeatherData;
@@ -6,7 +6,8 @@ interface ForecastListProps {
 
 export const ForecastList = ({ weather }: ForecastListProps) => {
   const currentHour = new Date().getHours();
-  const hourlyData = Array.from({ length: 24 }).map((_, i) => {
+  // Get 12 hours of forecast (makes a nice 3x4 or 4x3 grid)
+  const hourlyData = Array.from({ length: 12 }).map((_, i) => {
     return {
       time: new Date(weather.hourly.time[i]).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       temp: weather.hourly.temperature_2m[i],
@@ -22,16 +23,28 @@ export const ForecastList = ({ weather }: ForecastListProps) => {
   })).slice(0, 7);
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '32px' }}>
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '32px', alignItems: 'start' }}>
       
-      {/* Hourly Forecast */}
-      <div className="neo-card neo-white" style={{ overflowX: 'auto' }}>
+      {/* Hourly Forecast - Grid Layout to Fulfill the Square */}
+      <div className="neo-card neo-white" style={{ display: 'flex', flexDirection: 'column' }}>
         <h2 style={{ marginBottom: '24px', textTransform: 'uppercase', borderBottom: '4px solid #0f172a', paddingBottom: '8px' }}>Hourly</h2>
-        <div style={{ display: 'flex', gap: '16px', minWidth: 'min-content', paddingBottom: '8px' }}>
-          {hourlyData.slice(0, 12).map((hour, i) => (
-            <div key={i} className="neo-card neo-blue" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: '80px', padding: '12px' }}>
-              <span style={{ fontSize: '0.9rem', marginBottom: '8px', fontWeight: 700 }}>{hour.time}</span>
-              <span className="material-symbols-rounded" style={{ marginBottom: '8px', fontSize: '32px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', gap: '12px' }}>
+          {hourlyData.map((hour, i) => (
+            <div key={i} className="neo-card" style={{ 
+              backgroundColor: getWeatherColor(hour.code, 1),
+              display: 'flex', 
+              flexDirection: 'column',
+              justifyContent: 'center', 
+              alignItems: 'center', 
+              padding: '12px',
+              border: '2px solid #0f172a',
+              borderRadius: '4px',
+              boxShadow: '2px 2px 0px #0f172a'
+            }}>
+              <span style={{ fontSize: '0.85rem', fontWeight: 800, marginBottom: '8px', textAlign: 'center' }}>
+                {hour.time.replace(' ', '\n')}
+              </span>
+              <span className="material-symbols-rounded" style={{ fontSize: '28px', marginBottom: '8px' }}>
                 {getWeatherIcon(hour.code)}
               </span>
               <span style={{ fontWeight: 800, fontSize: '1.2rem' }}>{Math.round(hour.temp)}°</span>
@@ -41,17 +54,23 @@ export const ForecastList = ({ weather }: ForecastListProps) => {
       </div>
 
       {/* Daily Forecast */}
-      <div className="neo-card neo-pink">
+      <div className="neo-card neo-white">
         <h2 style={{ marginBottom: '24px', textTransform: 'uppercase', borderBottom: '4px solid #0f172a', paddingBottom: '8px' }}>Next 7 Days</h2>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {dailyData.map((day, i) => (
-            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #0f172a', paddingBottom: '8px' }}>
+            <div key={i} className="neo-card" style={{ 
+              backgroundColor: getWeatherColor(day.code, 1),
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'center', 
+              padding: '16px',
+            }}>
               <span style={{ width: '100px', fontWeight: 700, fontSize: '1.1rem' }}>{i === 0 ? 'TODAY' : day.date.toUpperCase()}</span>
-              <span className="material-symbols-rounded icon-medium">
+              <span className="material-symbols-rounded icon-medium" style={{ fontSize: '32px' }}>
                 {getWeatherIcon(day.code)}
               </span>
               <div style={{ display: 'flex', gap: '16px', minWidth: '90px', justifyContent: 'flex-end', fontWeight: 800, fontSize: '1.2rem' }}>
-                <span style={{ color: '#0f172a', opacity: 0.7 }}>{Math.round(day.minTemp)}°</span>
+                <span style={{ opacity: 0.7 }}>{Math.round(day.minTemp)}°</span>
                 <span>{Math.round(day.maxTemp)}°</span>
               </div>
             </div>
