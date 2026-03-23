@@ -1,0 +1,165 @@
+:root {
+  /* Neo-Brutalism Tokens */
+  --neo-bg: #fffbf0;
+  --neo-border: 3px solid #0f172a;
+  --neo-shadow: 4px 4px 0px #0f172a;
+  --neo-shadow-hover: 6px 6px 0px #0f172a;
+  --neo-shadow-active: 2px 2px 0px #0f172a;
+  
+  --neo-color-yellow: #fde047;
+  --neo-color-blue: #93c5fd;
+  --neo-color-pink: #f9a8d4;
+  --neo-color-green: #86efac;
+  --neo-color-white: #ffffff;
+  
+  --neo-text: #0f172a;
+  
+  --font-family: "Outfit", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--neo-bg);
+  color: var(--neo-text);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  /* subtle dot pattern for bg */
+  background-image: radial-gradient(#cbd5e1 1px, transparent 0);
+  background-size: 20px 20px;
+}
+
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+/* Base Neo Components */
+.neo-card {
+  background-color: var(--neo-color-white);
+  border: var(--neo-border);
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: var(--neo-shadow);
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.neo-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--neo-shadow-hover);
+}
+
+.neo-yellow { background-color: var(--neo-color-yellow); }
+.neo-blue { background-color: var(--neo-color-blue); }
+.neo-pink { background-color: var(--neo-color-pink); }
+.neo-green { background-color: var(--neo-color-green); }
+
+.neo-button {
+  background-color: var(--neo-color-white);
+  border: var(--neo-border);
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-family: var(--font-family);
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--neo-text);
+  cursor: pointer;
+  box-shadow: var(--neo-shadow);
+  transition: transform 0.1s, box-shadow 0.1s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.neo-button:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--neo-shadow-hover);
+}
+
+.neo-button:active {
+  transform: translate(2px, 2px);
+  box-shadow: var(--neo-shadow-active);
+}
+
+.neo-button.active-tab {
+  background-color: var(--neo-color-yellow);
+}
+
+.icon-large {
+  font-variation-settings: 'FILL' 1, 'wght' 600;
+  font-size: 64px;
+}
+
+.icon-medium {
+  font-variation-settings: 'FILL' 1, 'wght' 600;
+  font-size: 32px;
+}
+
+h1 {
+  font-size: 4rem;
+  font-weight: 800;
+  letter-spacing: -2px;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -1px;
+}
+
+/* Search UI Styles */
+.search-input {
+  width: 100%;
+  padding: 12px 24px 12px 48px;
+  border-radius: 8px;
+  border: var(--neo-border);
+  background-color: var(--neo-color-white);
+  color: var(--neo-text);
+  font-family: inherit;
+  font-size: 1.1rem;
+  font-weight: 600;
+  outline: none;
+  box-shadow: var(--neo-shadow);
+}
+
+.search-input:focus {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--neo-shadow-hover);
+}
+
+.search-results {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background-color: var(--neo-color-white);
+  border: var(--neo-border);
+  border-radius: 8px;
+  box-shadow: var(--neo-shadow);
+  overflow: hidden;
+  max-height: 400px;
+  overflow-y: auto;
+  z-index: 50;
+}
+
+.search-result-item {
+  padding: 16px 24px;
+  cursor: pointer;
+  font-weight: 600;
+  border-bottom: 2px solid #0f172a;
+}
+.search-result-item:last-child {
+  border-bottom: none;
+}
+
+.search-result-item:hover {
+  background-color: var(--neo-color-blue);
+}
