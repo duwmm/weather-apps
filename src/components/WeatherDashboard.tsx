@@ -91,20 +91,27 @@ export const WeatherDashboard = () => {
     }
   };
 
-  const handleSearch = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!searchQuery.trim()) return;
-    setIsSearching(true);
-    try {
-      const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(searchQuery)}&count=5`);
-      const data = await res.json();
-      setSearchResults(data.results || []);
-    } catch (err) {
-      console.error('Search error', err);
-    } finally {
-      setIsSearching(false);
-    }
-  };
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(async () => {
+      if (!searchQuery.trim()) {
+        setSearchResults([]);
+        setIsSearching(false);
+        return;
+      }
+      setIsSearching(true);
+      try {
+        const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(searchQuery)}&count=5`);
+        const data = await res.json();
+        setSearchResults(data.results || []);
+      } catch (err) {
+        console.error('Search error', err);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 400);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchQuery]);
 
   const selectSearchResult = (result: SearchResult) => {
     setSearchQuery('');
@@ -150,7 +157,7 @@ export const WeatherDashboard = () => {
           </div>
 
           <div style={{ position: 'relative', width: '100%', maxWidth: '400px', zIndex: 10 }}>
-            <form onSubmit={handleSearch} style={{ display: 'flex', position: 'relative' }}>
+            <form onSubmit={(e) => e.preventDefault()} style={{ display: 'flex', position: 'relative' }}>
               <span className="material-symbols-rounded" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', fontWeight: 800 }}>
                 search
               </span>
