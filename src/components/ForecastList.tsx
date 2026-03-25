@@ -5,7 +5,6 @@ interface ForecastListProps {
 }
 
 export const ForecastList = ({ weather }: ForecastListProps) => {
-  const currentHour = new Date().getHours();
   // Get 12 hours of forecast (makes a nice 3x4 or 4x3 grid)
   const hourlyData = Array.from({ length: 12 }).map((_, i) => {
     return {
@@ -28,26 +27,26 @@ export const ForecastList = ({ weather }: ForecastListProps) => {
       {/* Hourly Forecast - Grid Layout to Fulfill the Square */}
       <div className="neo-card neo-white" style={{ display: 'flex', flexDirection: 'column' }}>
         <h2 style={{ marginBottom: '24px', textTransform: 'uppercase', borderBottom: '4px solid #0f172a', paddingBottom: '8px' }}>Hourly</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', gap: '12px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', gap: '16px', padding: '16px 0' }}>
           {hourlyData.map((hour, i) => (
-            <div key={i} className="neo-card" style={{ 
+            <div key={i} className="neo-card hourly-card" style={{ 
               backgroundColor: getWeatherColor(hour.code, 1),
               display: 'flex', 
               flexDirection: 'column',
               justifyContent: 'center', 
               alignItems: 'center', 
-              padding: '12px',
-              border: '2px solid #0f172a',
-              borderRadius: '4px',
-              boxShadow: '2px 2px 0px #0f172a'
+              padding: '8px',
+              border: '3px solid #0f172a',
+              borderRadius: '8px',
+              boxShadow: '3px 3px 0px #0f172a'
             }}>
-              <span style={{ fontSize: '0.85rem', fontWeight: 800, marginBottom: '8px', textAlign: 'center' }}>
+              <div className="time-tag">
                 {hour.time.replace(' ', '\n')}
-              </span>
-              <span className="material-symbols-rounded" style={{ fontSize: '28px', marginBottom: '8px' }}>
+              </div>
+              <span className="material-symbols-rounded" style={{ fontSize: '36px', marginBottom: '8px' }}>
                 {getWeatherIcon(hour.code)}
               </span>
-              <span style={{ fontWeight: 800, fontSize: '1.2rem' }}>{Math.round(hour.temp)}°</span>
+              <span style={{ fontWeight: 900, fontSize: '1.4rem' }}>{Math.round(hour.temp)}°</span>
             </div>
           ))}
         </div>

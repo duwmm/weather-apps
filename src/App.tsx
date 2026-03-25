@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+
 import { WeatherDashboard } from './components/WeatherDashboard'
 
 function App() {

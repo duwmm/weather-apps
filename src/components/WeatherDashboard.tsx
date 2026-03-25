@@ -60,7 +60,9 @@ export const WeatherDashboard = () => {
             const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
             const geoData = await geoRes.json();
             name = geoData.address.city || geoData.address.town || geoData.address.village || 'Your Location';
-          } catch (e) {}
+          } catch (e) {
+            console.error('Geocoding error:', e);
+          }
           
           const loc = { id: `${latitude},${longitude}`, name, lat: latitude, lon: longitude };
           setActiveLocation(loc);
@@ -75,6 +77,7 @@ export const WeatherDashboard = () => {
       setActiveLocation(savedLocations[0]);
       fetchWeather(savedLocations[0]);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [savedLocations]);
 
   const fetchWeather = async (loc: SavedLocation) => {
@@ -85,6 +88,7 @@ export const WeatherDashboard = () => {
       setData(weather);
       setActiveLocation(loc);
     } catch (err) {
+      console.error('Weather fetch error:', err);
       setError('Failed to fetch weather data.');
     } finally {
       setLoading(false);
